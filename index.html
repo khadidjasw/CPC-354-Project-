@@ -128,9 +128,9 @@
         <h1>WHAT !!!!</h1>
         <div class="container">
            <canvas width="400" height="200" style="grid-column: 1 / span 2; grid-row: 1 / span 3;"></canvas>
-           <button class="but1" style="grid-row: 4; grid-column: 1; border-image: linear-gradient(135deg, green, lime) 1;">Start !</button>
-           <button class="but1" style="grid-row: 4; grid-column: 2; border-image: linear-gradient(135deg, red, coral) 1;">Stop !</button>
-           <button class="but1" style="grid-row: 4; grid-column: 4; border-image: linear-gradient(135deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 10%, rgba(208,222,33,1) 20%, rgba(79,220,74,1) 30%, rgba(63,218,216,1) 40%, rgba(47,201,226,1) 50%, rgba(28,127,238,1) 60%, rgba(95,21,242,1) 70%, rgba(186,12,248,1) 80%, rgba(251,7,217,1) 90%, rgba(255,0,0,1) 100%) 1;">Surprise Button</button>
+           <button id="StartButton" class="but1" style="grid-row: 4; grid-column: 1; border-image: linear-gradient(135deg, green, lime) 1;">Start !</button>
+           <button id="StopButton" class="but1" style="grid-row: 4; grid-column: 2; border-image: linear-gradient(135deg, red, coral) 1;">Stop !</button>
+           <button id="SurpriseButton" class="but1" style="grid-row: 4; grid-column: 4; border-image: linear-gradient(135deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 10%, rgba(208,222,33,1) 20%, rgba(79,220,74,1) 30%, rgba(63,218,216,1) 40%, rgba(47,201,226,1) 50%, rgba(28,127,238,1) 60%, rgba(95,21,242,1) 70%, rgba(186,12,248,1) 80%, rgba(251,7,217,1) 90%, rgba(255,0,0,1) 100%) 1;">Surprise Button</button>
            <div class="slidecontainer" style="grid-row: 5; grid-column: 1 / span 2;">
                <span class="slider-text" id="EXTRUSIONVALUE">??</span>
                <input type="range" min="-10" max="10" value="1" class="slider" id="ExtrusionSlider">
@@ -143,47 +143,81 @@
            </div>
 
            <div class="slidecontainer" style="grid-row: 2; grid-column: 3;">
-               <input type="color" id="picker1" value="#3b82f6">
-               <span class="slider-text" id="color1">Color of Letter W</span>
+               <input type="color" id="ColorLetterW" value="#3b82f6">
+               <span class="slider-text" id="ColorLetterWTEXT">Color of Letter W</span>
            </div>
            <div class="slidecontainer" style="grid-row: 3; grid-column: 3;">
-               <input type="color" id="picker2" value="#3b82f6">
-               <span class="slider-text" id="color2">Color of Letter H</span>
+               <input type="color" id="ColorLetterH" value="#3b82f6">
+               <span class="slider-text" id="ColorLetterHTEXT">Color of Letter H</span>
            </div>
            <div class="slidecontainer" style="grid-row: 2; grid-column: 4;">
-               <input type="color" id="picker3" value="#3b82f6">
-               <span class="slider-text" id="color4">Color of Letter A</span>
+               <input type="color" id="ColorLetterA" value="#3b82f6">
+               <span class="slider-text" id="ColorLetterATEXT">Color of Letter A</span>
            </div>
            <div class="slidecontainer" style="grid-row: 3; grid-column: 4;">
-               <input type="color" id="picker4" value="#3b82f6">
-               <span class="slider-text" id="color4">Color of Letter T</span>
+               <input type="color" id="ColorLetterT" value="#3b82f6">
+               <span class="slider-text" id="ColorLetterTTEXT">Color of Letter T</span>
            </div>
            <div class="slidecontainer" style="grid-row: 4; grid-column: 3;">
-               <input type="color" id="picker5" value="#3b82f6">
-               <span class="slider-text" id="color5">Color of Background</span>
+               <input type="color" id="ColorBackground" value="#3b82f6">
+               <span class="slider-text" id="ColorBackgroundTEXT">Color of Background</span>
            </div>
         </div>
         <script>
-        [1,2,3,4,5].forEach((n) => { // To absolutely change
-          var picker = document.getElementById("picker"+n);
-          var hexValue = document.getElementById("color"+n);
 
-          // Update the current slider value (each time you drag the slider handle)
-          picker.addEventListener('change', (event) => {
-            const selectedColor = event.target.value;
-            //hexValue.textContent = `Selected color ${n} :`+selectedColor;
-            hexValue.style.backgroundColor = selectedColor;
-          });
-        });
-
+        function LoadColor(name,func) {
+          var color = document.getElementById(name);
+          color.onchange = function() {
+            func(color.value);
+          }
+        }
+        function LoadButton(name,func) {
+          var button = document.getElementById(name);
+          button.onclick = function() {
+            func();
+          }
+        }
         function LoadSlider(name,func) {
           var slider = document.getElementById(name);
-
-          // Update the current slider value (each time you drag the slider handle)
           slider.oninput = function() {
             func(slider.value);
           }
         }
+
+        LoadColor("ColorLetterW",(value)=>{
+          var hexValue = document.getElementById("ColorLetterWTEXT");
+          hexValue.style.backgroundColor = value;
+        })
+        LoadColor("ColorLetterH",(value)=>{
+          var hexValue = document.getElementById("ColorLetterHTEXT");
+          hexValue.style.backgroundColor = value;
+        })
+        LoadColor("ColorLetterA",(value)=>{
+          var hexValue = document.getElementById("ColorLetterATEXT");
+          hexValue.style.backgroundColor = value;
+        })
+        LoadColor("ColorLetterT",(value)=>{
+          var hexValue = document.getElementById("ColorLetterTTEXT");
+          hexValue.style.backgroundColor = value;
+        })
+        LoadColor("ColorBackground",(value)=>{
+          var hexValue = document.getElementById("ColorBackgroundTEXT");
+          hexValue.style.backgroundColor = value;
+        })
+
+        LoadButton("StartButton",()=>{
+          console.log("START BUTTON PUSHED")
+          // WHATEVER YOU WANT TO PUT //
+        })
+        LoadButton("StopButton",()=>{
+          console.log("STOP BUTTON PUSHED")
+          // WHATEVER YOU WANT TO PUT //
+        })
+        LoadButton("SurpriseButton",()=>{
+          console.log("SURPRISE BUTTON PUSHED")
+          // WHATEVER YOU WANT TO PUT //
+        })
+
 
         LoadSlider("SpeedSlider",(value)=>{
           var output = document.getElementById("SPEEDVALUE");
