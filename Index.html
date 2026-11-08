@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Letter - W Interactive</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Control panel style (UI) */
+        #ui-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-100%);
+            background: rgba(240, 240, 240, 0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: #333333;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            width: 300px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Control panel with a slider -->
+    <div id="ui-container">
+        <label for="rotateSlider">Rotation on the Y-axis : <span id="angleValue">0</span>°</label>
+        <input type="range" id="rotateSlider" min="0" max="360" value="0">
+    </div>
+
+    <!-- Importing Three.js via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // 1. Scene, camera, and WebGL renderer initialization
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff); // <-- WHITE BACKGROUND FOR THE 3D SCENE
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 2. Scene lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1.0);
+        pointLight.position.set(100, 100, 150);
+        scene.add(pointLight);
+
+        const wordGroup = new THREE.Group();
+
+        // Helper function to create an extruded letter
+        function createLetterMesh(shape, xPosition) {
+            const extrudeSettings = { 
+                depth: 25, 
+                bevelEnabled: true, 
+                bevelThickness: 2, 
+                bevelSize: 2 };
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geometry.center(); // Center each letter
+            
+            const material = new THREE.MeshStandardMaterial({ 
+                color: 0x3498db, 
+                roughness: 0.3, 
+                metalness: 0.6 });
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            mesh.position.x = xPosition; // Position the letter on the line
+            return mesh;
+        }
+
+        // Letter W
+        const shapeW = new THREE.Shape();
+        shapeW.moveTo(-25, 25); shapeW.lineTo(-18, 25); shapeW.lineTo(-10, -10);
+        shapeW.lineTo(-3, 10); shapeW.lineTo(3, 10); shapeW.lineTo(10, -10);
+        shapeW.lineTo(18, 25); shapeW.lineTo(25, 25); shapeW.lineTo(15, -25);
+        shapeW.lineTo(8, -25); shapeW.lineTo(0, -5); shapeW.lineTo(-8, -25);
+        shapeW.lineTo(-15, -25); shapeW.closePath();
+
+        // Letter H
+        const shapeH = new THREE.Shape();
+        shapeH.moveTo(-15, 25); shapeH.lineTo(-8, 25); shapeH.lineTo(-8, 3);
+        shapeH.lineTo(8, 3); shapeH.lineTo(8, 25); shapeH.lineTo(15, 25);
+        shapeH.lineTo(15, -25); shapeH.lineTo(8, -25); shapeH.lineTo(8, -3);
+        shapeH.lineTo(-8, -3); shapeH.lineTo(-8, -25); shapeH.lineTo(-15, -25);
+        shapeH.closePath();
+
+        // Actual letter A as a geometric block
+        const shapeA = new THREE.Shape();
+        shapeA.moveTo(-18, -25);    // Bottom left outer
+        shapeA.lineTo(0, 25);       // Pointed top of the letter
+        shapeA.lineTo(18, -25);     // Bottom right outer
+        shapeA.lineTo(10, -25);     // Inner right foot
+        shapeA.lineTo(4, -5);       // Upward slope towards inner right
+        shapeA.lineTo(-4, -5);      // Inner crossbar
+        shapeA.lineTo(-10, -25);    // Downward slope towards inner left
+        shapeA.closePath();         // Close shape to starting point
+
+        // Letter T
+        const shapeT = new THREE.Shape();
+        shapeT.moveTo(-15, 25); shapeT.lineTo(15, 25); shapeT.lineTo(15, 18);
+        shapeT.lineTo(4, 18); shapeT.lineTo(4, -25); shapeT.lineTo(-4, -25);
+        shapeT.lineTo(-4, 18); shapeT.lineTo(-15, 18); shapeT.closePath();
+
+        // Adding letters to the group with appropriate spacing
+        wordGroup.add(createLetterMesh(shapeW, -75));
+        wordGroup.add(createLetterMesh(shapeH, -20));
+        wordGroup.add(createLetterMesh(shapeA, 30));
+        wordGroup.add(createLetterMesh(shapeT, 75));
+
+        // Adding the complete word to the main scene
+        scene.add(wordGroup);
+
+        // This is the "wordGroup" you can rotate with your slider!
+
+        camera.position.z = 200;
+
+        // 5. Linking the slider (UI) with the 3D rotation of the letter
+        const slider = document.getElementById('rotateSlider');
+        const angleValueSpan = document.getElementById('angleValue');
+
+        slider.addEventListener('input', (event) => {
+            const degrees = event.target.value;
+            angleValueSpan.textContent = degrees;
+            wordGroup.rotation.y = THREE.MathUtils.degToRad(degrees);
+        });
+
+        // 5. Animation loop (Updated to make each letter rotate on itself)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Loop through each letter (child) of the word group
+            wordGroup.children.forEach((letterMesh, index) => {
+                // Rotate each letter on its own Y axis
+                // (Reverse the rotation direction for every other letter for a stylish effect)
+                const speed = 0.01;
+                if (index % 2 === 0) {
+                    letterMesh.rotation.y += speed;
+                } else {
+                    letterMesh.rotation.y -= speed;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Window resize handling
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
