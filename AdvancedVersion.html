@@ -135,7 +135,7 @@
     </style>
 </head>
 <body>
-<h1>WHAT TV Indent</h1>
+<h1>WHAT TV Ident</h1>
 <div class="container">
 
 
@@ -243,25 +243,11 @@ let speedMultiplier = 1.0;    // Factor to speed up or slow down animation time
     LoadSlider("ExtrusionSlider", (value) => {
         var output = document.getElementById("EXTRUSIONVALUE");
         output.innerHTML = value;
-        depth = parseFloat(value) * 0.2;   // 3 -> 0.6, la valeur de départ
+        depth = parseFloat(value) * 0.2;   // 3 -> 0.6 so the beginning value
         buildWord();
         updateBuffers();
     });
 
-    // Handle Restart Button click event
-    LoadButton("RestartButton", () => {
-        console.log("RESTART BUTTON PUSHED");
-        isAnimating = true;
-        if (typeof animator !== 'undefined') {
-            animator.reset(); // Restarts the animation timeline from the beginning
-        }
-    });
-
-    // Handle Stop Button click event
-    LoadButton("StopButton", () => {
-        console.log("STOP BUTTON PUSHED");
-        isAnimating = false; // Freezes the rendering loop
-    });
 
     /* ======================================================== */
 
@@ -613,9 +599,9 @@ let speedMultiplier = 1.0;    // Factor to speed up or slow down animation time
     // Create animator instance and track previous time
     const animator = new Animator();
     var lastFrame = null;
-    var animTime = 0;       // temps de l'animation surprise (secondes)
-    var spinAngle = 0;      // angle de la rotation simple
-    var mode = 'spin';      // 'spin' ou 'surprise'
+    var animTime = 0;       // Surprise anim time (sec)
+    var spinAngle = 0;      // Simple rotation angle
+    var mode = 'spin';      // 'spin' or 'surprise'
     var bgColor = [1, 1, 1]; //RGB Values 0<=Value<=1
 
     var animate = function(time) {
@@ -648,12 +634,13 @@ let speedMultiplier = 1.0;    // Factor to speed up or slow down animation time
     }
     window.requestAnimationFrame(animate);
 
-    LoadButton("RestartButton",  () => { mode = 'spin'; spinAngle = 0; isAnimating = true; });
-    LoadButton("StopButton",     () => { isAnimating = false; });
+    LoadButton("RestartButton",  () => { mode = 'spin'; spinAngle = 0; isAnimating = true; }); // Restarts the animation timeline from the beginning
+    LoadButton("StopButton",     () => { isAnimating = false; }); // Freezes the rendering loop
     LoadButton("SurpriseButton", () => { mode = 'surprise'; animTime = 0; isAnimating = true; });
     LoadButton("ResetButton",    () => { mode = 'spin'; spinAngle = 0; animTime = 0; isAnimating = false; });
 </script>
-<h2>An animation made by :<br>Justin CHALOPIN
+<h2>An animation made by :
+<br>Justin CHALOPIN
 <br>Estéban PAYET
 <br>Abdul Rahman Al Mazrooi
 <br>Khadidja SOW
