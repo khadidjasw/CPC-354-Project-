@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<!-- source 1 : https://www.youtube.com/watch?v=JIZ0MptdCKE -->
+<html>
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Honk&display=swap');
+        :root {
+            --buttonwidth: 200px;        /* largeur précise */
+            --buttonheight: 40px;
+            --buttontextsize:16px;
+        }
+        body {
+            background-color: black;
+            font-family: Helvetica, sans-serif;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            font-family: "Honk", system-ui;
+            font-weight: 400;
+            font-size: 42pt;
+        }
+        h2 {
+            text-align: center;
+            font-family: "Honk", system-ui;
+            font-weight: 100;
+            font-size: 22pt;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            padding: 10px;
+            row-gap: 20px;
+            column-gap: 50px;
+            align-items: center; /* Aligns slider and text vertically */
+            margin-right: 100px;
+            margin-left: 100px;
+        }
+
+        .but1 {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: black;
+            text-align: center;
+            vertical-align: center;
+            color: white;
+            font-size: var(--buttontextsize);
+            cursor: pointer;
+            justify-self: center;
+            width: var(--buttonwidth);        /* largeur précise */
+            height: var(--buttonheight);
+
+            transition-duration: 0.4s;
+
+            border-width: 4px;
+            border-style: solid;
+        /*border-image: linear-gradient(135deg, yellow, darkorchid) 1;*/
+            overflow: hidden;
+        }
+
+        .but1:hover {
+            width: calc(var(--buttonwidth)*1.1);        /* largeur précise */
+            height: calc(var(--buttonheight)*1.1);
+            font-size: calc(var(--buttontextsize)*1.1);
+            overflow: hidden;
+        }
+
+
+        .but1:active {
+            transition-duration: 0.05s;
+            background-color: white;
+            width: calc(var(--buttonwidth)*1.3);        /* largeur précise */
+            height: calc(var(--buttonheight)*1.3);
+            font-size: calc(var(--buttontextsize)*1.3);
+            overflow: hidden;
+        }
+
+        canvas {
+            justify-self: center;
+        }
+
+        .slidecontainer {
+            width: 100%; /* Width of the outside container */
+            color: white;
+            text-align: right;
+            display: flex;
+            align-items: center; /* Aligns slider and text vertically */
+            justify-items: end;
+            gap: 15px;           /* Creates space between slider and text */
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width:100%;
+            height: 15px;
+            border-radius: 10px;
+            border: 4px solid transparent;
+            background:
+                    linear-gradient(black, black) padding-box,
+                    linear-gradient(135deg, yellow, darkorchid) border-box;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+
+            background: black;
+            border-width: 4px;
+            border-style: solid;
+            border-color: white;
+            cursor: pointer;
+        }
+
+        .slider-text {
+            white-space: nowrap; /* Prevents text from wrapping to a new line */
+            font-family: Arial, Helvetica, sans-serif;
+            min-width: 45px;     /* prevents layout shift if text changes length (e.g., 9% to 100%) */
+        }
+    </style>
+</head>
+<body>
+<h1>WHAT TV Ident</h1>
+<div class="container">
+
+
+    <canvas width="550" height="400" style="grid-column: 2; grid-row: 2 / span 6;"></canvas>
+
+    <!-- Colors -->
+    <div class="slidecontainer" style="grid-row: 2; grid-column: 1;">
+        <input type="color" id="ColorLetterW" value="#1a9900">
+        <span class="slider-text" id="ColorLetterWTEXT">Color of Letter W</span>
+    </div>
+    <div class="slidecontainer" style="grid-row: 3; grid-column: 1;">
+        <input type="color" id="ColorLetterH" value="#1a9900">
+        <span class="slider-text" id="ColorLetterHTEXT">Color of Letter H</span>
+    </div>
+    <div class="slidecontainer" style="grid-row: 4; grid-column: 1;">
+        <input type="color" id="ColorLetterA" value="#1a9900">
+        <span class="slider-text" id="ColorLetterATEXT">Color of Letter A</span>
+    </div>
+    <div class="slidecontainer" style="grid-row: 5; grid-column: 1;">
+        <input type="color" id="ColorLetterT" value="#1a9900">
+        <span class="slider-text" id="ColorLetterTTEXT">Color of Letter T</span>
+    </div>
+    <div class="slidecontainer" style="grid-row: 6; grid-column: 1;">
+        <input type="color" id="ColorBackground" value="#0000ff">
+        <span class="slider-text" id="ColorBackgroundTEXT">Color of Background</span>
+    </div>
+
+    <!-- Buttons -->
+    <button id="RestartButton" class="but1" style="grid-row: 2; grid-column: 3; border-image: linear-gradient(135deg, green, lime) 1;">Start !</button>
+    <button id="StopButton" class="but1" style="grid-row: 3; grid-column: 3; border-image: linear-gradient(135deg, red, coral) 1;">Stop !</button>
+    <button id="SurpriseButton" class="but1" style="grid-row: 4; grid-column: 3; border-image: linear-gradient(135deg, rgba(255,0,0,1) 0%, rgba(255,154,0,1) 10%, rgba(208,222,33,1) 20%, rgba(79,220,74,1) 30%, rgba(63,218,216,1) 40%, rgba(47,201,226,1) 50%, rgba(28,127,238,1) 60%, rgba(95,21,242,1) 70%, rgba(186,12,248,1) 80%, rgba(251,7,217,1) 90%, rgba(255,0,0,1) 100%) 1;">Surprise Button</button>
+    <button id="ResetButton" class="but1" style="grid-row: 5; grid-column: 3; border-image: linear-gradient(135deg, gray, white) 1;">Reset</button>
+
+
+    <!-- Sliders -->
+    <div class="slidecontainer" style="grid-row: 7; grid-column: 3 / span 1;">
+        <span class="slider-text" id="EXTRUSIONVALUE">3</span>
+        <input type="range" min="0" max="20" value="3" class="slider" id="ExtrusionSlider">
+        <span class="slider-text">Extrusion</span>
+    </div>
+    <div class="slidecontainer" style="grid-row: 6; grid-column: 3 / span 1;">
+        <span class="slider-text" id="SPEEDVALUE">1</span>
+        <input type="range" min="-5" max="5" step="0.1" value="1" class="slider" id="SpeedSlider">
+        <span class="slider-text">Speed</span>
+    </div>
+
+</div>
+
+<script>
+
+let isAnimating = false;       // Toggle to play/pause rendering loop
+let speedMultiplier = 1.0;    // Factor to speed up or slow down animation time
+    function LoadColor(name,func) {
+        var color = document.getElementById(name);
+        color.oninput = function() {
+            func(color.value);
+        }
+    }
+    function LoadButton(name,func) {
+        var button = document.getElementById(name);
+        button.onclick = function() {
+            func();
+        }
+    }
+    function LoadSlider(name,func) {
+        var slider = document.getElementById(name);
+        slider.oninput = function() {
+            func(slider.value);
+        }
+    }
+
+    function hexToRgb(hex) {
+        return [parseInt(hex.slice(1,3),16)/255,
+                parseInt(hex.slice(3,5),16)/255,
+                parseInt(hex.slice(5,7),16)/255];
+    }
+
+    [["ColorLetterW",0],["ColorLetterH",1],["ColorLetterA",2],["ColorLetterT",3]].forEach(([id, i]) => {
+        LoadColor(id, (value) => {
+            word[i].col = hexToRgb(value);
+            buildWord();
+            updateBuffers();
+        });
+    });
+
+    LoadColor("ColorBackground", (value) => {
+        document.getElementById("ColorBackgroundTEXT").style.backgroundColor = value;
+        bgColor = hexToRgb(value);
+    });
+
+    /* ========================================================
+         * New code by Finn: Interactive Controls & State
+         * ======================================================== */
+
+    // Global variables to track animation state and slider values
+
+    // Handle Speed Slider input changes
+    LoadSlider("SpeedSlider", (value) => {
+        var output = document.getElementById("SPEEDVALUE");
+        output.innerHTML = value;
+        speedMultiplier = parseFloat(value);
+    });
+
+    // Handle Extrusion Slider input changes
+    LoadSlider("ExtrusionSlider", (value) => {
+        var output = document.getElementById("EXTRUSIONVALUE");
+        output.innerHTML = value;
+        depth = parseFloat(value) * 0.2;   // 3 -> 0.6 so the beginning value
+        buildWord();
+        updateBuffers();
+    });
+
+
+    /* ======================================================== */
+
+
+
+
+
+</script>
+
+<script>
+
+//-------------------------------------------------
+//           Justin's code
+//-------------------------------------------------
+    const canvas = document.querySelector("canvas");
+
+    // Getting the WebGL rendering context.
+    const gl = canvas.getContext("webgl");
+
+    var vertices =[];
+    var colors = [];
+
+    var depth = 0.6;
+    var strokeWidth = 0.5; // for the slanted letter W and A
+    var LETTER_SPACING = 0.4;
+    var WORD_SCALE = 0.4;
+
+    // Each letter is drawn in an x, y space going from -1 to +1.
+    // Two kinds of bars:  { rect:[x0,y0,x1,y1] } = straight rectangle
+    //                     { A:[x,y], B:[x,y] }   = slanted bar going from A to B
+    var letterW = [
+        { A: [-1.00,  1.0], B: [-0.65, -1.0] },
+        { A: [-0.65, -1.0], B: [-0.15,  0.3] },
+        { A: [-0.15,  0.3], B: [ 0.35, -1.0] },
+        { A: [ 0.35, -1.0], B: [ 0.70,  1.0] }
+    ];
+    var letterH = [
+        { rect: [-1.0, -1.0, -0.7,  1.0] },      // left vertical bar
+        { rect: [ 0.7, -1.0,  1.0,  1.0] },      // right vertical bar
+        { rect: [-0.7, -0.15, 0.7,  0.15] }      // horizontal bar in the middle
+    ];
+    var letterA = [
+        { A: [-1.00, -1.0], B: [-0.15, 1.0] },   // left leg
+        { A: [-0.15,  1.0], B: [ 0.70, -1.0] },  // right leg
+        { rect: [-0.5, -0.45, 0.5, -0.15] }      // horizontal bar
+    ];
+    var letterT = [
+        { rect: [-1.0,  0.7,  1.0,  1.0] },      // top bar
+        { rect: [-0.15, -1.0, 0.15, 0.7] }       // vertical stem
+    ];
+
+    // The word: each letter with ITS OWN color (R,G,B between 0 and 1)
+    var word = [
+        { bars: letterW, col: [1, 0.60, 0.60] },
+        { bars: letterH, col: [1, 0.60, 0.60] },
+        { bars: letterA, col: [1, 0.60, 0.60] },
+        { bars: letterT, col: [1, 0.60, 0.60] }
+    ];
+
+    //used to give each face a different shade so the 3D relief is visible (k < 1)
+    function shade(c, k) { return [c[0] * k, c[1] * k, c[2] * k]; }
+
+    function addTriangle(a, b, c, col) {
+        vertices.push(a[0], a[1], a[2],  b[0], b[1], b[2],  c[0], c[1], c[2]);
+        for (var i = 0; i < 3; i++) colors.push(col[0], col[1], col[2]);
+    }
+
+    function addQuad(a, b, c, d, col) {
+        addTriangle(a, b, c, col);
+        addTriangle(a, c, d, col);
+    }
+
+    function extrudeLetter(letter, offsetX) {
+        var halfDepth = depth / 2;
+        letter.bars.forEach(function (bar) {
+            // the 4 2D corners of the bar
+            var corners;
+            if (bar.rect) {
+                corners = [ [bar.rect[0], bar.rect[1]], [bar.rect[2], bar.rect[1]],
+                            [bar.rect[2], bar.rect[3]], [bar.rect[0], bar.rect[3]] ];
+            } else {
+                corners = [ [bar.A[0], bar.A[1]], [bar.A[0] + strokeWidth, bar.A[1]],
+                            [bar.B[0] + strokeWidth, bar.B[1]], [bar.B[0], bar.B[1]] ];
+            }
+            // search the 4 corners of the bar, and create the front and back faces
+            var front = corners.map(function (q) { return [(q[0] + offsetX) * WORD_SCALE, q[1] * WORD_SCALE,  halfDepth * WORD_SCALE]; });
+            var back  = corners.map(function (q) { return [(q[0] + offsetX) * WORD_SCALE, q[1] * WORD_SCALE, -halfDepth * WORD_SCALE]; });
+            // front face and back face
+            addQuad(front[0], front[1], front[2], front[3], letter.col);
+            addQuad(back[0], back[1], back[2], back[3], shade(letter.col, 0.5));
+            // connect each front edge to the matching back edge
+            for (var i = 0; i < 4; i++) {
+                var j = (i + 1) % 4;
+                addQuad(front[i], front[j], back[j], back[i], shade(letter.col, i % 2 ? 0.8 : 0.65));
+            }
+        });
+    }
+
+     function buildWord() {
+        vertices = [];
+        colors = [];
+        word.forEach(function (letter, i) {
+            // centers the word on x = 0: the middle of the word sits around 0
+            var offsetX = (i - (word.length - 1) / 2) * (2 + LETTER_SPACING);
+            extrudeLetter(letter, offsetX);
+        });
+    }
+    buildWord();
+    //----------------------------------------------------
+    //              end
+    //----------------------------------------------------
+
+    // Create and store data into vertex buffer
+    var vertex_buffer = gl.createBuffer ();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    // Create and store data into color buffer
+    var color_buffer = gl.createBuffer ();
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+
+    function updateBuffers() {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    }
+
+    /*=================== Shaders =========================*/
+
+    var vertCode = 'attribute vec3 position;'+
+        'uniform mat4 Pmatrix;'+
+        'uniform mat4 Vmatrix;'+
+        'uniform mat4 Mmatrix;'+
+        'attribute vec3 color;'+//the color of the point
+        'varying vec3 vColor;'+
+
+        'void main(void) { '+//pre-built function
+        'gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);'+
+        'vColor = color;'+
+        '}';
+
+    var fragCode = 'precision mediump float;'+
+        'varying vec3 vColor;'+
+        'void main(void) {'+
+        'gl_FragColor = vec4(vColor, 1.);'+
+        '}';
+
+    var vertShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertShader, vertCode);
+    gl.compileShader(vertShader);
+
+    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragShader, fragCode);
+    gl.compileShader(fragShader);
+
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertShader);
+    gl.attachShader(shaderProgram, fragShader);
+    gl.linkProgram(shaderProgram);
+
+    /* ====== Associating attributes to vertex shader =====*/
+    var Pmatrix = gl.getUniformLocation(shaderProgram, "Pmatrix");
+    var Vmatrix = gl.getUniformLocation(shaderProgram, "Vmatrix");
+    var Mmatrix = gl.getUniformLocation(shaderProgram, "Mmatrix");
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    var position = gl.getAttribLocation(shaderProgram, "position");
+    gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0) ;
+
+    // Position
+    gl.enableVertexAttribArray(position);
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    var color = gl.getAttribLocation(shaderProgram, "color");
+    gl.vertexAttribPointer(color, 3, gl.FLOAT, false,0,0) ;
+
+    // Color
+    gl.enableVertexAttribArray(color);
+    gl.useProgram(shaderProgram);
+
+    /*==================== MATRIX =====================*/
+
+    function get_projection(angle, a, zMin, zMax) {
+        var ang = Math.tan((angle*.5)*Math.PI/180);//angle*.5
+        return [
+            0.5/ang, 0 , 0, 0,
+            0, 0.5*a/ang, 0, 0,
+            0, 0, -(zMax+zMin)/(zMax-zMin), -1,
+            0, 0, (-2*zMax*zMin)/(zMax-zMin), 0
+        ];
+    }
+
+    var proj_matrix = get_projection(40, canvas.width/canvas.height, 1, 100);
+
+    var mov_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+    var view_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+
+    // translating z
+    view_matrix[14] = view_matrix[14]-6;//zoom
+
+    /* ========================================================
+     * ANIMATION(Code By Finn: Changed from Estebans earlier example)
+     * ======================================================== */
+
+    // Class for necessary matrix calculation
+    class MatrixMath {
+
+        // creates default matrix, no movement or scaling
+        static baselineMatrix() {
+            return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+        }
+
+        //combines two matrices together, order is important
+        static multiply(a, b) {
+            let out = new Array(16);
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    out[i * 4 + j] =
+                        a[0 * 4 + j] * b[i * 4 + 0] +
+                        a[1 * 4 + j] * b[i * 4 + 1] +
+                        a[2 * 4 + j] * b[i * 4 + 2] +
+                        a[3 * 4 + j] * b[i * 4 + 3];
+                }
+            }
+            return out;
+        }
+
+        // spin object around the X axis
+        static rotationX(angle) {
+            let c = Math.cos(angle), s = Math.sin(angle);
+            return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1];
+        }
+
+        // spin object around the Y axis
+        static rotationY(angle) {
+            let c = Math.cos(angle), s = Math.sin(angle);
+            return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1];
+        }
+
+        // scale object up or down
+        static scaling(s) {
+            return [s,0,0,0, 0,s,0,0, 0,0,s,0, 0,0,0,1];
+        }
+
+        // move object along the selected coordinates
+        static move(x, y, z) {
+            return [1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1];
+        }
+    }
+
+    // Animator class to handle phase-based timeline animations
+    class Animator {
+        constructor() {
+            this.startTime = null;
+            // Defines duration in seconds for each animation phase
+            this.phases = [
+                { duration: 1.0 }, // 1. Start at center
+                { duration: 1.5 }, // 2. Rotate right 180 deg
+                { duration: 1.5 }, // 3. Rotate back to original
+                { duration: 1.5 }, // 4. Rotate left 180 deg
+                { duration: 1.5 }, // 5. Rotate back to original
+                { duration: 2.0 }, // 6. Enlarge
+                { duration: Infinity } // 7. Infinite "move about" loop
+            ];
+        }
+
+        // Smoother animation helper generated using Generative Ai Gemini
+        easeInOut(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+
+        // Calculates and returns the model transformation matrix based on elapsed time
+        getModelMatrix(elapsed) {   // elapsed en secondes
+
+            let accumulated = 0;
+            let phaseIndex = 0;
+            let tPhase = 0;
+
+            // Determine current active animation phase and local phase progress (0 to 1)
+            for (let i = 0; i < this.phases.length; i++) {
+                if (elapsed < accumulated + this.phases[i].duration || i === this.phases.length - 1) {
+                    phaseIndex = i;
+                    tPhase = (elapsed - accumulated) / this.phases[i].duration;
+                    if (tPhase > 1) tPhase = 1;
+                    break;
+                }
+                accumulated += this.phases[i].duration;
+            }
+
+            let rotY = 0;
+            let scale = 1.0;
+            let bobY = 0;
+            let continuousRotX = 0;
+            let continuousRotY = 0;
+
+            // Set animation parameters according to the active phase
+            switch (phaseIndex) {
+                case 0: // 1. Start at center
+                    rotY = 0;
+                    scale = 1.0;
+                    break;
+
+                case 1: // 2. Rotate right by 180 degrees (Math.PI = 180 degrees)
+                    rotY = this.easeInOut(tPhase) * Math.PI;
+                    scale = 1.0;
+                    break;
+
+                case 2: // 3. Rotate back to original orientation
+                    rotY = (1.0 - this.easeInOut(tPhase)) * Math.PI;
+                    scale = 1.0;
+                    break;
+
+                case 3: // 4. Rotate to the left by 180 degrees (-Math.PI)
+                    rotY = -this.easeInOut(tPhase) * Math.PI;
+                    scale = 1.0;
+                    break;
+
+                case 4: // 5. Rotate back to original orientation
+                    rotY = -(1.0 - this.easeInOut(tPhase)) * Math.PI;
+                    scale = 1.0;
+                    break;
+
+                case 5: // 6. Gradually enlarge
+                    rotY = 0;
+                    scale = 1.0 + this.easeInOut(tPhase);
+                    break;
+
+                case 6: // 7. Continuous rotation & bobbing
+                    scale = 2.2;
+                    let loopTime = elapsed - accumulated;
+                    continuousRotY = loopTime * 0.8;
+                    continuousRotX = loopTime * 0.5;
+                    bobY = Math.sin(loopTime * 3.0) * 0.3; // bobbing
+                    break;
+            }
+
+            // Combine transformations: Translation * Scale * RotationX * RotationY
+            let mat = MatrixMath.baselineMatrix();
+            mat = MatrixMath.multiply(mat, MatrixMath.move(0, bobY, 0));
+            mat = MatrixMath.multiply(mat, MatrixMath.scaling(scale));
+            mat = MatrixMath.multiply(mat, MatrixMath.rotationX(continuousRotX));
+            mat = MatrixMath.multiply(mat, MatrixMath.rotationY(rotY + continuousRotY));
+
+            return mat;
+        }
+    }
+
+    // Create animator instance and track previous time
+    const animator = new Animator();
+    var lastFrame = null;
+    var animTime = 0;       // Surprise anim time (sec)
+    var spinAngle = 0;      // Simple rotation angle
+    var mode = 'spin';      // 'spin' or 'surprise'
+    var bgColor = [1, 1, 1]; //RGB Values 0<=Value<=1
+
+    var animate = function(time) {
+        if (lastFrame === null) lastFrame = time;
+        var dt = (time - lastFrame) / 1000;
+        lastFrame = time;
+
+        if (isAnimating) {
+            if (mode === 'spin') spinAngle += dt * speedMultiplier;
+            else animTime = Math.max(0, animTime + dt * speedMultiplier);
+        }
+
+        var mov_matrix = (mode === 'spin')
+            ? MatrixMath.rotationY(spinAngle)
+            : animator.getModelMatrix(animTime);
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LEQUAL);
+        gl.clearColor(bgColor[0], bgColor[1], bgColor[2], 1);
+        gl.clearDepth(1.0);
+        gl.viewport(0.0, 0.0, canvas.width, canvas.height);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
+        gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
+        gl.uniformMatrix4fv(Mmatrix, false, mov_matrix);
+        gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3);
+
+        window.requestAnimationFrame(animate);
+    }
+    window.requestAnimationFrame(animate);
+
+    LoadButton("RestartButton",  () => { mode = 'spin'; spinAngle = 0; isAnimating = true; }); // Restarts the animation timeline from the beginning
+    LoadButton("StopButton",     () => { isAnimating = false; }); // Freezes the rendering loop
+    LoadButton("SurpriseButton", () => { mode = 'surprise'; animTime = 0; isAnimating = true; });
+    LoadButton("ResetButton",    () => { mode = 'spin'; spinAngle = 0; animTime = 0; isAnimating = false; });
+</script>
+<h2>An animation made by :
+<br>Justin CHALOPIN
+<br>Estéban PAYET
+<br>Abdul Rahman Al Mazrooi
+<br>Khadidja SOW
+<br>Finn Steinbaum
+</h2>
+</body>
+</html>
