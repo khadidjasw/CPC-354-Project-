@@ -2,6 +2,7 @@
 <!-- source 1 : https://www.youtube.com/watch?v=JIZ0MptdCKE -->
 <html>
 <head>
+    <meta charset="UTF-8">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Honk&display=swap');
         :root {
@@ -143,23 +144,23 @@
 
     <!-- Colors -->
     <div class="slidecontainer" style="grid-row: 2; grid-column: 1;">
-        <input type="color" id="ColorLetterW" value="#1a9900">
+        <input type="color" id="ColorLetterW" value="#ff9999">
         <span class="slider-text" id="ColorLetterWTEXT">Color of Letter W</span>
     </div>
     <div class="slidecontainer" style="grid-row: 3; grid-column: 1;">
-        <input type="color" id="ColorLetterH" value="#1a9900">
+        <input type="color" id="ColorLetterH" value="#ff9999">
         <span class="slider-text" id="ColorLetterHTEXT">Color of Letter H</span>
     </div>
     <div class="slidecontainer" style="grid-row: 4; grid-column: 1;">
-        <input type="color" id="ColorLetterA" value="#1a9900">
+        <input type="color" id="ColorLetterA" value="#ff9999">
         <span class="slider-text" id="ColorLetterATEXT">Color of Letter A</span>
     </div>
     <div class="slidecontainer" style="grid-row: 5; grid-column: 1;">
-        <input type="color" id="ColorLetterT" value="#1a9900">
+        <input type="color" id="ColorLetterT" value="#ff9999">
         <span class="slider-text" id="ColorLetterTTEXT">Color of Letter T</span>
     </div>
     <div class="slidecontainer" style="grid-row: 6; grid-column: 1;">
-        <input type="color" id="ColorBackground" value="#0000ff">
+        <input type="color" id="ColorBackground" value="#ffffff">
         <span class="slider-text" id="ColorBackgroundTEXT">Color of Background</span>
     </div>
 
@@ -251,7 +252,24 @@ let speedMultiplier = 1.0;    // Factor to speed up or slow down animation time
 
     /* ======================================================== */
 
-
+    /* ========================================================
+     * New code by Khadidja: Keyboard shortcuts (keydown event)
+     * Space = Start/Stop, R = Reset, S = Surprise
+     * ======================================================== */
+    document.addEventListener("keydown", function(event) {
+        if (event.code === "Space") {
+            event.preventDefault(); // stop the page from scrolling
+            if (isAnimating) {
+                document.getElementById("StopButton").click();
+            } else {
+                document.getElementById("RestartButton").click();
+            }
+        } else if (event.key === "r" || event.key === "R") {
+            document.getElementById("ResetButton").click();
+        } else if (event.key === "s" || event.key === "S") {
+            document.getElementById("SurpriseButton").click();
+        }
+    });
 
 
 
